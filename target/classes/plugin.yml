@@ -1,0 +1,33 @@
+name: DivserDuelsXYZ
+main: dev.divsersmp.duels.DivserDuelsXYZ
+version: 1.0.0
+api-version: 1.21
+author: divsersmp
+softdepend: [WorldEdit, LuckPerms]
+commands:
+  duel:
+    description: Send or accept a duel request.
+    usage: /<command> <player|accept|deny|leaderboard>
+    aliases: [duels]
+  duelsarena:
+    description: Manage duel arenas.
+    usage: /<command> <create|delete|list|setspawn|setspectator|seticon|wand|worldborder wand|saveworldborder|schematicwand|saveschematic>
+    aliases: [arena, teamsarena]
+  divserduels:
+    description: Plugin management commands.
+    usage: /<command> <reload>
+    aliases: []
+  party:
+    description: Create and manage party-based team duels.
+    usage: /<command> <create|invite|leave|join|disband|kick|settings|teams|ready|start>
+    aliases: [p]
+  spectate:
+    description: Spectate a player who is currently in a duel.
+    usage: /<command> <player>
+permissions:
+  divsersmp.duels.use:
+    default: true
+  divsersmp.duels.admin:
+    default: op
+  divserduels.reload:
+    default: op

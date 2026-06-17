@@ -1,0 +1,42 @@
+# Configurable scoreboard templates for Duels plugin
+# Edit the `lines` arrays to change what appears on the scoreboard.
+# Available placeholders (examples):
+# %player% %duels_arena% %duels_kit% %duels_mode% %duels_opponent% %duels_opponent_health%
+# %duels_match_time% %duels_winstreak% %player_health_rounded% %player_ping%
+# %party_alive% %enemy_alive% %players_alive% %match_kills% %match_deaths% %party_size% %party_leader%
+# Color codes supported: &a, &b, &c, &6, &r, etc.
+# Lines are rendered top-to-bottom; maximum 15 entries recommended.
+
+update-interval-ticks: 20
+
+duel:
+  title: "&d&l⚔ DUEL ARENA ⚔"
+  lines:
+    - "&8┌ &6⚡ Battle &8┐"
+    - "&7Arena: &e%duels_arena%"
+    - "&7Inventory: &b%keep_inventory_on_off%"
+    - "&7Mode: &a%duels_mode%"
+    - "&7Vs: &c%duels_opponent% &7(&e%duels_opponent_health% HP&7)"
+    - "&7Timer: &d%duels_match_time%"
+    - "&7You: &a%duels_player_a_health% HP &7♥"
+    - "&7Ping: &e%duels_player_ping% ms"
+    - "&7Wins: &6%duels_winstreak%"
+    - "&8└ &5✨ Keep fighting &8┘"
+
+party:
+  title: "&b&l🛡 PARTY DUEL 🛡"
+  lines:
+    - "&8┏ &dTeam Clash &8┓"
+    - "&7Arena: &e%duels_arena%"
+    - "&7Leader: &6%party_leader%"
+    - "&7Teams: &a%party_lime_count% &7| &c%party_red_count%"
+    - "&7Alive: &a%party_lime_alive% &7| &c%party_red_alive%"
+    - "&7Ready: &a%party_ready_count% &7/ &e%party_size%"
+    - "&d------------------"
+    - "%party_teams%"
+    - "&8┗ &5Fight together &8┛"
+
+restore-on-end: true
+
+# If you want to disable automatic scoreboard management by the plugin (e.g., when using a tab/scoreboard plugin), set to false.
+enabled: true

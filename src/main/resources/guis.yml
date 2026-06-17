@@ -1,0 +1,136 @@
+# DivserDuelsXYZ GUIs Configuration
+# Customize GUI items and click commands here
+
+DuelOptionsGUI:
+  title: "§bDuel Options"
+  size: 27
+  fireworks:
+    name: "§6Fireworks"
+    material: "FIREWORK_ROCKET"
+    slot: 2
+    lore: "§7Click the dye beneath to toggle"
+    click-command: "toggle-fireworks"
+  potions:
+    name: "§6Potions"
+    material: "POTION"
+    slot: 3
+    lore: "§7Click the dye beneath to toggle"
+    click-command: "toggle-potions"
+  arrows:
+    name: "§6Arrows"
+    material: "SPECTRAL_ARROW"
+    slot: 4
+    lore: "§7Click the dye beneath to toggle"
+    click-command: "toggle-arrows"
+  slow-falling:
+    name: "§6Slow Falling Potion"
+    material: "SPLASH_POTION"
+    slot: 5
+    lore: "§7Click the dye beneath to toggle"
+    click-command: "toggle-slow-falling"
+  mace:
+    name: "§6Mace"
+    material: "MACE"
+    slot: 6
+    lore: "§7Click the dye beneath to toggle"
+    click-command: "toggle-mace"
+  barrier:
+    name: "§cBack"
+    material: "BARRIER"
+    slot: 9
+    lore: "§7Return to previous menu"
+    click-command: "back"
+  next:
+    name: "§aReady"
+    material: "IRON_SWORD"
+    slot: 17
+    lore: "§7Proceed to ready lobby"
+    click-command: "next"
+
+TeamSelectionGUI:
+  title: "§9Team Selection"
+  size: 27
+  barrier:
+    name: "§cBack"
+    material: "BARRIER"
+    slot: 9
+    lore: "§7Return to invite menu"
+    click-command: "back"
+  randomize:
+    name: "§dRandomize Teams"
+    material: "AMETHYST_SHARD"
+    slot: 13
+    lore: "§7Shuffle teams randomly"
+    click-command: "randomize"
+  next:
+    name: "§aNext"
+    material: "IRON_SWORD"
+    slot: 17
+    lore: "§7Proceed to duel options"
+    click-command: "next"
+  red-line:
+    name: "§cRed Team"
+    material: "RED_STAINED_GLASS_PANE"
+    slot: 0-8
+    lore: "§7Red team members"
+    click-command: ""
+  lime-line:
+    name: "§aLime Team"
+    material: "LIME_STAINED_GLASS_PANE"
+    slot: 18-26
+    lore: "§7Lime team members"
+    click-command: ""
+
+KeepInventoryGUI:
+  title: "§eKeep Inventory Setting"
+  size: 27
+  info:
+    name: "§6Keep Inventory"
+    material: "CHEST"
+    slot: 13
+    lore: "§7Choose whether items stay after death"
+    click-command: ""
+  disabled:
+    name: "§cKeep Inventory: OFF"
+    material: "RED_WOOL"
+    slot: 10
+    lore: "§7Disabled - Items will not be kept"
+    click-command: "keep-inventory-off"
+  enabled:
+    name: "§aKeep Inventory: ON"
+    material: "GREEN_WOOL"
+    slot: 16
+    lore: "§7Enabled - Items will be kept"
+    click-command: "keep-inventory-on"
+  back:
+    name: "§cBack"
+    material: "BARRIER"
+    slot: 18
+    lore: "§7Return to team selection"
+    click-command: "back"
+
+PartyMenuGUI:
+  title: "§6Party Selection"
+  size: 27
+  duel-1v1:
+    name: "§a1 vs 1 Duels"
+    material: "IRON_SWORD"
+    slot: 11
+    lore: "§7Click to start a classic duel"
+    click-command: "start-1v1"
+  team-duel:
+    name: "§9Team Duels"
+    material: "LEATHER_CHESTPLATE"
+    slot: 15
+    lore: "§7Click to create a team party"
+    click-command: "start-team"
+
+TeamInviteGUI:
+  title: "§cTeam Members - Max 14"
+  size: 27
+  decor:
+    name: " "
+    material: "LIGHT_GRAY_STAINED_GLASS_PANE"
+    slot: 3-5
+    lore: ""
+    click-command: ""
