@@ -1,0 +1,142 @@
+# DivserDuelsXYZ Configuration
+# Customize all aspects of the duels plugin
+
+# ========== MESSAGES ==========
+messages:
+  prefix: "§8[§bDivser§fDuels§8] §r"
+  # Arena messages
+  arena_created: "§a✅ Arena '§e{arena}§r' created successfully!"
+  arena_deleted: "§c🗑 Arena '§e{arena}§r' deleted."
+  arena_not_found: "§c❌ Arena not found."
+  arena_center_selected: "§b📍 Arena center set to §f{x}, {y}, {z}"
+  arena_selected: "§6🎯 Arena '§e{arena}§r' selected."
+  
+  # Duel request messages
+  duel_request_sent: "§d📩 Duel request sent to §e{target}§r."
+  duel_request_header: "§6§l────────── §r§eDUEL REQUEST§6 §l──────────"
+  duel_request_body: "§b§l{player} §rchallenged you to a duel!"
+  duel_allowed: "§aAllowed: §f{rules}"
+  duel_accept: "§a[§2Accept§a]"
+  duel_deny: "§c[§4Deny§c]"
+  duel_accept_hover: "§7Click to accept the duel."
+  duel_deny_hover: "§7Click to deny the duel."
+  duel_arena_location: "§7Arena location: §f{x} §7{y} §7{z}"
+  duel_request_expired: "§c⏰ The duel request to §e{target} §chas expired."
+  
+  # Acceptance messages
+  duel_accepted: "§5⚔ Duel started! Get ready to fight."
+  duel_denied: "§c✖ You denied the duel request."
+  duel_denied_target: "§c✖ Your duel request to §e{target} §chas been denied."
+  duel_target_offline: "§c⚠ Player is no longer online."
+  duel_challenger_offline: "§c⚠ The challenger has gone offline."
+  
+  # Error messages
+  error_player_only: "Only players can use this command."
+  error_no_permission: "§cYou don't have permission."
+  error_invalid_request_id: "§cInvalid request id."
+  error_request_expired: "§cThat duel request has expired or is invalid."
+  error_not_target: "§cYou are not the target of this duel request."
+  error_already_in_duel: "§cEither you or the challenger is already in a duel."
+  error_arena_not_selected: "§cYou need to select the arena with the clock first."
+  error_arena_not_set: "§cPlease select the duel arena first."
+  error_arena_missing: "§cThe duel arena was not selected. Ask the challenger to try again."
+  error_cant_duel_self: "§cYou cannot duel yourself."
+  error_arena_exists: "§cAn arena with that name already exists."
+  error_item_blocked: "§cThat item is blocked in this duel."
+  error_potions_blocked: "§cPotions are blocked during this duel."
+  error_slow_fall_blocked: "§cSlow falling is blocked during this duel."
+  error_no_active_setup: "§cYou do not have an active duel setup."
+  
+  # Menu messages
+  menu_arena_selection: "§6✦ Duel Arena Selection ✦"
+  menu_keep_inventory: "§b🛡 Duel Setup - Keep Inventory"
+  menu_restrictions: "§d⚠ Duel Setup - Restrictions"
+  menu_custom_arena: "+ Create Custom Arena"
+  menu_select_arena: "Left click a block to select the arena center."
+  menu_select_arena_block: "§eLeft click a block to select the arena center."
+  
+  # Item descriptions
+  item_select_arena: "§aSelect Arena Center"
+  item_select_arena_lore1: "§7Left click a block"
+  item_select_arena_lore2: "§7to set the duel arena."
+  item_keep_inventory: "§eKeep Inventory: {status}"
+  item_keep_inventory_lore1: "§7Toggle whether player inventory"
+  item_keep_inventory_lore2: "§7is restored after the duel."
+  item_choose_blocks: "§bChoose Item Blocks"
+  item_choose_blocks_lore1: "§7Continue to choose which items"
+  item_choose_blocks_lore2: "§7are blocked in the duel."
+  item_block_arrows: "§aBlock Arrows"
+  item_block_fireworks: "§aBlock Fireworks"
+  item_block_potions: "§aBlock Potions"
+  item_block_slow_fall: "§aBlock Slow Fall"
+  item_toggle_lore1_on: "§7This feature is currently blocked."
+  item_toggle_lore2: "§7Click to toggle."
+  item_back_to_inventory: "§bBack to Keep Inventory"
+  item_back_lore: "§7Change keep inventory or arena selection."
+  item_send_duel: "§aSend Duel Request"
+  item_send_duel_lore1: "§7Click to send the duel request."
+  item_send_duel_lore2: "§7Arena must be selected."
+  
+  # Status messages
+  status_on: "§aON"
+  status_off: "§cOFF"
+  status_no_arenas: "§cNo arenas created yet."
+  status_player_not_found: "§cPlayer not found or is offline."
+
+# ========== DUEL SETTINGS ==========
+duel:
+  # Default duel rules
+  default_keep_inventory: false
+  default_block_arrows: false
+  default_block_fireworks: false
+  default_block_potions: false
+  default_block_slow_falling: false
+  
+  # Duel request expiration (in seconds)
+  request_expiration: 60
+  
+  # Duel combat settings
+  border_radius: 50
+  border_damage: 10
+  
+# ========== ARENA SETTINGS ==========
+arena:
+  # Arena configuration
+  save_location: "arenas.yml"
+  auto_load_on_startup: true
+  
+# ========== COMMAND SETTINGS ==========
+commands:
+  enabled: true
+  
+# ========== SOUND SETTINGS ==========
+sounds:
+  button_click: true
+  button_click_pitch: 1.0
+  level_up: true
+  level_up_pitch: 1.3
+  deny_sound: true
+  deny_sound_pitch: 0.8
+  pickup_sound: true
+  pickup_sound_pitch: 1.5
+  arrow_hit: true
+  arrow_hit_pitch: 1.0
+  accept_request: true
+  accept_request_pitch: 0.8
+
+# ========== END OF DUEL SETTINGS ==========
+duel_end:
+  winner_title: "§6✨ VICTORY ✨"
+  winner_subtitle: "§7You defeated §e{loser}§7!"
+  loser_title: "§c✗ DEFEAT ✗"
+  loser_subtitle: "§7Better luck next time §e{winner}§7!"
+  blindness_duration: 3
+  sound_enabled: true
+  winner_sound: "ENTITY_PLAYER_LEVELUP"
+  loser_sound: "ENTITY_WITHER_HURT"
+  sound_pitch: 1.3
+
+# ========== PARTICLE SETTINGS ==========
+particles:
+  arena_center_particles: true
+  particle_count: 50

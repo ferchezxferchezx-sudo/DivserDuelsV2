@@ -1,0 +1,32 @@
+partycreate:
+  main_item:
+    material: IRON_SWORD
+    display_name: "§aParty Tool"
+    lore:
+      - "§7Right click to open the party menu"
+      - "§7The party tool cannot be moved"
+    slot: 1
+    command: "open_party_menu"
+  members_item:
+    material: BOOKSHELF
+    display_name: "§eParty Members"
+    lore:
+      - "§7Right click to open the members menu"
+      - "§7Right click a head to kick a player"
+    slot: 2
+    command: "open_party_members"
+  restore_item:
+    material: BARRIER
+    display_name: "§cRestore Inventory & Disband"
+    lore:
+      - "§7Right click to restore your inventory"
+      - "§7and disband the party"
+    slot: 9
+    command: "restore_inventory"
+  cooldown_ms: 1000
+  sounds:
+    open_menu: "ENTITY_PLAYER_LEVELUP"
+    open_members: "BLOCK_CHEST_OPEN"
+    restore_inventory: "BLOCK_ANVIL_USE"
+    create_party: "ENTITY_PLAYER_LEVELUP"
+    disband_party: "ENTITY_VILLAGER_NO"
