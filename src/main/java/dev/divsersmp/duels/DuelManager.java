@@ -662,6 +662,16 @@ public class DuelManager implements Listener {
 
         DuelSession session = getSession(player);
         if (session != null) {
+            // If player is in drop-animation, block horizontal movement but allow vertical
+            try {
+                if (session.isDropping(player.getUniqueId())) {
+                    if (event.getTo() != null && (event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockZ() != event.getTo().getBlockZ())) {
+                        event.setCancelled(true);
+                        if (event.getFrom() != null) Bukkit.getScheduler().runTaskLater(plugin, () -> player.teleport(event.getFrom()), 1L);
+                    }
+                    return;
+                }
+            } catch (Exception ignored) {}
             if (session.isCountdownActive()) {
                 if (event.getTo() != null && !event.getFrom().getBlock().equals(event.getTo().getBlock())) {
                     event.setCancelled(true);
@@ -676,6 +686,16 @@ public class DuelManager implements Listener {
 
         TeamDuelSession partySession = partyManager.getActiveSession(player.getUniqueId());
         if (partySession != null) {
+            // If player is in drop-animation for party duel, block horizontal movement
+            try {
+                if (partySession.isDropping(player.getUniqueId())) {
+                    if (event.getTo() != null && (event.getFrom().getBlockX() != event.getTo().getBlockX() || event.getFrom().getBlockZ() != event.getTo().getBlockZ())) {
+                        event.setCancelled(true);
+                        if (event.getFrom() != null) Bukkit.getScheduler().runTaskLater(plugin, () -> player.teleport(event.getFrom()), 1L);
+                    }
+                    return;
+                }
+            } catch (Exception ignored) {}
             if (partySession.isCountdownActive()) {
                 if (event.getTo() != null && !event.getFrom().getBlock().equals(event.getTo().getBlock())) {
                     event.setCancelled(true);
@@ -1841,12 +1861,11 @@ public class DuelManager implements Listener {
                 // Open a status GUI showing who is ready. Players may close this GUI but remain queued.
                 dev.divsersmp.duels.gui.ReadyStatusGUI.open(player, party);
                 player.sendMessage(configManager.format("§aYou are queued for the duel."));
-                if (party.isLeader(player.getUniqueId())) {
-                    for (UUID memberId : party.getMembers()) {
-                        Player member = Bukkit.getPlayer(memberId);
-                        if (member != null && member.isOnline()) {
-                            Bukkit.getScheduler().runTask(plugin, () -> dev.divsersmp.duels.gui.ReadyStatusGUI.open(member, party));
-                        }
+                // Open the ready status GUI for all party members
+                for (UUID memberId : party.getMembers()) {
+                    Player member = Bukkit.getPlayer(memberId);
+                    if (member != null && member.isOnline()) {
+                        Bukkit.getScheduler().runTask(plugin, () -> dev.divsersmp.duels.gui.ReadyStatusGUI.open(member, party));
                     }
                 }
             }

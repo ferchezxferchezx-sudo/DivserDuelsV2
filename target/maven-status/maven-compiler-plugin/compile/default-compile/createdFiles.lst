@@ -24,6 +24,7 @@ dev/divsersmp/duels/PartyManager.class
 dev/divsersmp/duels/DuelSession$1.class
 dev/divsersmp/duels/DuelCommand.class
 dev/divsersmp/duels/DuelManager.class
+dev/divsersmp/duels/TeamDuelSession$4.class
 dev/divsersmp/duels/gui/KeepInventoryGUI.class
 dev/divsersmp/duels/DivserDuelsXYZ.class
 dev/divsersmp/duels/TeamDuelSession$1.class
@@ -31,7 +32,9 @@ dev/divsersmp/duels/ArenaManager.class
 dev/divsersmp/duels/Arena.class
 dev/divsersmp/duels/gui/PartyMemberSelectionGUI.class
 dev/divsersmp/duels/DuelManager$1.class
+dev/divsersmp/duels/DuelSession$6.class
 dev/divsersmp/duels/LuckPermsSupport.class
+dev/divsersmp/duels/TeamDuelSession$5.class
 dev/divsersmp/duels/gui/SettingsGUI.class
 dev/divsersmp/duels/gui/ModernReadyGUI.class
 dev/divsersmp/duels/gui/PartyMenuGUI.class
@@ -44,4 +47,6 @@ dev/divsersmp/duels/PartyManager$TargetComponent.class
 dev/divsersmp/duels/SpectateCommand.class
 dev/divsersmp/duels/DuelRequest.class
 dev/divsersmp/duels/TeamDuelSession$2.class
+dev/divsersmp/duels/DuelSession$5.class
 dev/divsersmp/duels/DuelSession$2.class
+dev/divsersmp/duels/TeamDuelSession$6.class

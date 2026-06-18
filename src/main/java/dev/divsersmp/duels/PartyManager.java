@@ -51,7 +51,6 @@ public class PartyManager {
         Party party = new Party(leader.getUniqueId());
         registerParty(party);
         savePartyCreationBackup(leader);
-        clearPartyTools(leader);
         givePartyCreationItems(leader);
 
         leader.sendTitle(configManager.getTitleRaw("partystarttitle"), configManager.getTitleRaw("partystartsubtitle"), 10, 40, 10);

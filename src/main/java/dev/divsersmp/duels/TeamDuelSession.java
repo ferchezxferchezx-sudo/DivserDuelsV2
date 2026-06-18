@@ -72,37 +72,59 @@ public class TeamDuelSession {
             int maxZ = Math.max(c1.getBlockZ(), c2.getBlockZ());
 
             org.bukkit.World world = c1.getWorld();
+            java.util.List<Location> barrierLocations = new java.util.ArrayList<>();
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
-                    placeBarrierAt(new Location(world, x, y, minZ));
-                    placeBarrierAt(new Location(world, x, y, maxZ));
+                    barrierLocations.add(new Location(world, x, y, minZ));
+                    barrierLocations.add(new Location(world, x, y, maxZ));
                 }
             }
             for (int z = minZ; z <= maxZ; z++) {
                 for (int y = minY; y <= maxY; y++) {
-                    placeBarrierAt(new Location(world, minX, y, z));
-                    placeBarrierAt(new Location(world, maxX, y, z));
+                    barrierLocations.add(new Location(world, minX, y, z));
+                    barrierLocations.add(new Location(world, maxX, y, z));
                 }
             }
+            placBarriersAsync(barrierLocations, 16);
         } else if (center != null) {
             // fallback to a small square around center
             int radius = 4;
             int minY = center.getBlockY() - 1;
             int maxY = center.getBlockY() + 3;
             org.bukkit.World world = center.getWorld();
+            java.util.List<Location> barrierLocations = new java.util.ArrayList<>();
             for (int x = center.getBlockX() - radius; x <= center.getBlockX() + radius; x++) {
                 for (int y = minY; y <= maxY; y++) {
-                    placeBarrierAt(new Location(world, x, y, center.getBlockZ() - radius));
-                    placeBarrierAt(new Location(world, x, y, center.getBlockZ() + radius));
+                    barrierLocations.add(new Location(world, x, y, center.getBlockZ() - radius));
+                    barrierLocations.add(new Location(world, x, y, center.getBlockZ() + radius));
                 }
             }
             for (int z = center.getBlockZ() - radius; z <= center.getBlockZ() + radius; z++) {
                 for (int y = minY; y <= maxY; y++) {
-                    placeBarrierAt(new Location(world, center.getBlockX() - radius, y, z));
-                    placeBarrierAt(new Location(world, center.getBlockX() + radius, y, z));
+                    barrierLocations.add(new Location(world, center.getBlockX() - radius, y, z));
+                    barrierLocations.add(new Location(world, center.getBlockX() + radius, y, z));
                 }
             }
+            placBarriersAsync(barrierLocations, 16);
         }
+    }
+
+    private void placBarriersAsync(java.util.List<Location> locations, int batchSize) {
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int index = 0;
+            @Override
+            public void run() {
+                if (ended || index >= locations.size()) {
+                    cancel();
+                    return;
+                }
+                int end = Math.min(index + batchSize, locations.size());
+                for (int i = index; i < end; i++) {
+                    placeBarrierAt(locations.get(i));
+                }
+                index = end;
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
 
     private void placeBarrierAt(Location loc) {
@@ -131,15 +153,15 @@ public class TeamDuelSession {
             int minZ = Math.min(c1.getBlockZ(), c2.getBlockZ());
             int maxZ = Math.max(c1.getBlockZ(), c2.getBlockZ());
             org.bukkit.World world = c1.getWorld();
+            java.util.List<Location> snapshots = new java.util.ArrayList<>();
             for (int x = minX; x <= maxX; x++) {
                 for (int y = minY; y <= maxY; y++) {
                     for (int z = minZ; z <= maxZ; z++) {
-                        Location loc = new Location(world, x, y, z);
-                        Block block = loc.getBlock();
-                        originalBlocks.put(loc, block.getBlockData().clone());
+                        snapshots.add(new Location(world, x, y, z));
                     }
                 }
             }
+            captureSnapshotAsync(snapshots, 32);
             return;
         }
         Location center = arena.getCenter();
@@ -148,15 +170,35 @@ public class TeamDuelSession {
         }
         int radius = 4;
         int height = 3;
+        java.util.List<Location> snapshots = new java.util.ArrayList<>();
         for (int x = center.getBlockX() - radius; x <= center.getBlockX() + radius; x++) {
             for (int z = center.getBlockZ() - radius; z <= center.getBlockZ() + radius; z++) {
                 for (int y = center.getBlockY(); y <= center.getBlockY() + height; y++) {
-                    Location loc = new Location(center.getWorld(), x, y, z);
-                    Block block = loc.getBlock();
-                    originalBlocks.put(loc, block.getBlockData().clone());
+                    snapshots.add(new Location(center.getWorld(), x, y, z));
                 }
             }
         }
+        captureSnapshotAsync(snapshots, 32);
+    }
+
+    private void captureSnapshotAsync(java.util.List<Location> locations, int batchSize) {
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int index = 0;
+            @Override
+            public void run() {
+                if (ended || index >= locations.size()) {
+                    cancel();
+                    return;
+                }
+                int end = Math.min(index + batchSize, locations.size());
+                for (int i = index; i < end; i++) {
+                    Location loc = locations.get(i);
+                    Block block = loc.getBlock();
+                    originalBlocks.put(loc, block.getBlockData().clone());
+                }
+                index = end;
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
 
     public void start() {
@@ -189,11 +231,15 @@ public class TeamDuelSession {
             manager.getArenaManager().saveSnapshot(arena);
         }
 
+        // Raise spawn 5 blocks for slow falling effect
+        Location limSpawnRaised = limeSpawn.clone().add(0, 5, 0);
+        Location redSpawnRaised = redSpawn.clone().add(0, 5, 0);
+
         for (int i = 0; i < limeMembers.size(); i++) {
             UUID member = limeMembers.get(i);
             Player player = Bukkit.getPlayer(member);
             if (player != null && player.isOnline()) {
-                Location tpLoc = limeSpawn.clone().add(i * 0.8, 0, 0);
+                Location tpLoc = limSpawnRaised.clone().add(i * 0.8, 0, 0);
                 player.teleport(tpLoc);
                 player.setGameMode(GameMode.SURVIVAL);
                 player.setHealth(player.getMaxHealth());
@@ -205,7 +251,7 @@ public class TeamDuelSession {
             UUID member = redMembers.get(i);
             Player player = Bukkit.getPlayer(member);
             if (player != null && player.isOnline()) {
-                Location tpLoc = redSpawn.clone().subtract(i * 0.8, 0, 0);
+                Location tpLoc = redSpawnRaised.clone().subtract(i * 0.8, 0, 0);
                 player.teleport(tpLoc);
                 player.setGameMode(GameMode.SURVIVAL);
                 player.setHealth(player.getMaxHealth());
@@ -223,6 +269,51 @@ public class TeamDuelSession {
         startArenaBoundaryParticles(arena);
 
         try { manager.getScoreboardService().applyPartyScoreboard(this); } catch (Exception ignored) {}
+    }
+
+    // Drop animation state
+    private final java.util.Set<java.util.UUID> dropping = new java.util.HashSet<>();
+    private final java.util.Map<java.util.UUID, org.bukkit.Location> dropOrigin = new java.util.HashMap<>();
+
+    public boolean isDropping(java.util.UUID playerId) {
+        return dropping.contains(playerId);
+    }
+
+    private void startDropAnimation(org.bukkit.entity.Player player, int blocks, int totalTicks) {
+        if (player == null || !player.isOnline()) return;
+        java.util.UUID id = player.getUniqueId();
+        if (dropping.contains(id)) return;
+        dropping.add(id);
+        dropOrigin.put(id, player.getLocation().clone());
+        player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOW_FALLING, totalTicks + 20, 0, true, false, true));
+
+        final double total = blocks;
+        final int steps = Math.max(1, totalTicks);
+        final double delta = total / steps;
+
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int tick = 0;
+            @Override
+            public void run() {
+                if (!player.isOnline() || tick >= steps) {
+                    dropping.remove(id);
+                    dropOrigin.remove(id);
+                    this.cancel();
+                    return;
+                }
+                try {
+                    org.bukkit.Location loc = player.getLocation().clone();
+                    loc.setY(loc.getY() - delta);
+                    org.bukkit.Location origin = dropOrigin.get(id);
+                    if (origin != null) {
+                        loc.setX(origin.getX());
+                        loc.setZ(origin.getZ());
+                    }
+                    player.teleport(loc);
+                } catch (Exception ignored) {}
+                tick++;
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
     }
 
     private void startArenaBoundaryParticles(Arena arena) {
@@ -292,6 +383,8 @@ public class TeamDuelSession {
                         if (player != null && player.isOnline()) {
                             player.sendTitle("§aFight!", "§7The team duel has started", 5, 30, 10);
                             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 1.1f);
+                            // start drop animation for each player (duration matches countdown)
+                            try { startDropAnimation(player, 10, manager.getConfigManager().getDropSeconds() * 20); } catch (Exception ignored) {}
                         }
                     }
                     cancel();
@@ -440,9 +533,14 @@ public class TeamDuelSession {
         // Eliminate the player and teleport them back
         eliminated.add(player.getUniqueId());
         Location returnLoc = returnLocations.get(player.getUniqueId());
-        if (returnLoc != null) {
-            player.teleport(returnLoc);
-        }
+        Arena arena = manager.getArenaManager().getArena(party.getArenaName());
+        try {
+            if (returnLoc != null) {
+                player.teleport(returnLoc);
+            } else if (arena != null && arena.hasSpectatorSpawn()) {
+                player.teleport(arena.getSpectatorSpawn());
+            }
+        } catch (Exception ignored) {}
         
         // Restore inventory if keep inventory is ON
         if (party.isKeepInventory()) {
@@ -453,6 +551,9 @@ public class TeamDuelSession {
         }
         
         player.setGameMode(GameMode.SURVIVAL);
+        player.setSpectatorTarget(null);
+        player.setAllowFlight(false);
+        player.setFlying(false);
         player.sendMessage(ChatColor.GREEN + "You were teleported back to your previous location.");
         
         // Check if team is now eliminated

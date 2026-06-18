@@ -47,6 +47,8 @@ public class DuelSession {
     private double previousBorderCenterX;
     private double previousBorderCenterZ;
     private long pearlBlockUntil = 0L;
+    private final java.util.Set<java.util.UUID> dropping = new java.util.HashSet<>();
+    private final java.util.Map<java.util.UUID, org.bukkit.Location> dropOrigin = new java.util.HashMap<>();
     private static final String PREFIX = "§7[§bDivserDuels§7] §r";
 
     public DuelSession(DuelRequest request, Player playerA, Player playerB, DuelManager manager) {
@@ -101,6 +103,10 @@ public class DuelSession {
             spawn2 = center.clone().add(-3, 1, 0);
         }
 
+        // Raise spawn 5 blocks for slow falling effect
+        spawn1 = spawn1.clone().add(0, 5, 0);
+        spawn2 = spawn2.clone().add(0, 5, 0);
+
         // Teleport players to their spawns
         playerA.teleport(spawn1);
         playerB.teleport(spawn2);
@@ -114,7 +120,7 @@ public class DuelSession {
     }
 
     private void startCountdown(Location center) {
-        final int[] countdown = {5};
+        final int[] countdown = { manager.getConfigManager().getDropSeconds() };
 
         new BukkitRunnable() {
             @Override
@@ -183,6 +189,12 @@ public class DuelSession {
         try {
             manager.getScoreboardService().applyDuelScoreboard(this);
         } catch (Exception ignored) {}
+        // Play a short drop animation: drop 10 blocks slowly with Slow Falling
+        try {
+            int dropTicks = manager.getConfigManager().getDropSeconds() * 20;
+            startDropAnimation(playerA, 10, dropTicks);
+            startDropAnimation(playerB, 10, dropTicks);
+        } catch (Exception ignored) {}
         
         // Chat messages
         playerA.sendMessage(PREFIX + "§6━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -217,6 +229,49 @@ public class DuelSession {
 
     public Player getOpponent(Player player) {
         return player.getUniqueId().equals(playerA.getUniqueId()) ? playerB : playerA;
+    }
+
+    public boolean isDropping(java.util.UUID playerId) {
+        return dropping.contains(playerId);
+    }
+
+    private void startDropAnimation(org.bukkit.entity.Player player, int blocks, int totalTicks) {
+        if (player == null || !player.isOnline()) return;
+        java.util.UUID id = player.getUniqueId();
+        if (dropping.contains(id)) return;
+        dropping.add(id);
+        dropOrigin.put(id, player.getLocation().clone());
+        // Apply Slow Falling
+        player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOW_FALLING, totalTicks + 20, 0, true, false, true));
+
+        final double total = blocks;
+        final int steps = Math.max(1, totalTicks);
+        final double delta = total / steps;
+
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int tick = 0;
+            @Override
+            public void run() {
+                if (!player.isOnline() || tick >= steps) {
+                    dropping.remove(id);
+                    dropOrigin.remove(id);
+                    this.cancel();
+                    return;
+                }
+                try {
+                    org.bukkit.Location loc = player.getLocation().clone();
+                    loc.setY(loc.getY() - delta);
+                    // keep X/Z fixed to origin to prevent horizontal drift
+                    org.bukkit.Location origin = dropOrigin.get(id);
+                    if (origin != null) {
+                        loc.setX(origin.getX());
+                        loc.setZ(origin.getZ());
+                    }
+                    player.teleport(loc);
+                } catch (Exception ignored) {}
+                tick++;
+            }
+        }.runTaskTimer(plugin, 1L, 1L);
     }
 
     public boolean isCountdownActive() {
@@ -716,20 +771,40 @@ public class DuelSession {
 
     private void createBarrier(int radius, int height) {
         Location center = request.getArenaCenter();
+        java.util.List<Location> barrierLocations = new java.util.ArrayList<>();
         for (int x = center.getBlockX() - radius; x <= center.getBlockX() + radius; x++) {
             for (int y = center.getBlockY(); y <= center.getBlockY() + height; y++) {
                 for (int z : new int[]{center.getBlockZ() - radius, center.getBlockZ() + radius}) {
-                    placeBarrierAt(new Location(center.getWorld(), x, y, z));
+                    barrierLocations.add(new Location(center.getWorld(), x, y, z));
                 }
             }
         }
         for (int z = center.getBlockZ() - radius; z <= center.getBlockZ() + radius; z++) {
             for (int y = center.getBlockY(); y <= center.getBlockY() + height; y++) {
                 for (int x : new int[]{center.getBlockX() - radius, center.getBlockX() + radius}) {
-                    placeBarrierAt(new Location(center.getWorld(), x, y, z));
+                    barrierLocations.add(new Location(center.getWorld(), x, y, z));
                 }
             }
         }
+        placBarriersAsync(barrierLocations, 16);
+    }
+
+    private void placBarriersAsync(java.util.List<Location> locations, int batchSize) {
+        new org.bukkit.scheduler.BukkitRunnable() {
+            int index = 0;
+            @Override
+            public void run() {
+                if (ended || index >= locations.size()) {
+                    cancel();
+                    return;
+                }
+                int end = Math.min(index + batchSize, locations.size());
+                for (int i = index; i < end; i++) {
+                    placeBarrierAt(locations.get(i));
+                }
+                index = end;
+            }
+        }.runTaskTimer(plugin, 0, 1);
     }
 
     private void placeBarrierAt(Location loc) {

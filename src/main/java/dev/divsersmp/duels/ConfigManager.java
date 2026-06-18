@@ -131,6 +131,11 @@ public class ConfigManager {
         return partyCreateConfig.getLong("partycreate.cooldown_ms", 1000L);
     }
 
+    public int getDropSeconds() {
+        if (config == null) return 5;
+        return config.getInt("duel.drop_seconds", 5);
+    }
+
     public ItemStack createPartyItem(String itemKey) {
         if (partyCreateConfig == null) {
             return null;
