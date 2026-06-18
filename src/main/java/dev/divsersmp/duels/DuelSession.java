@@ -109,6 +109,9 @@ public class DuelSession {
 
         // Teleport players to their spawns
         playerA.teleport(spawn1);
+        // Restore players to clear inventory (they joined with party items)
+        if (playerA.getInventory() != null) playerA.getInventory().clear();
+        if (playerB.getInventory() != null) playerB.getInventory().clear();
         playerB.teleport(spawn2);
         
         // Play initial sounds and effects

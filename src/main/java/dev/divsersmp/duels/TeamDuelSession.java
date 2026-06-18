@@ -241,6 +241,7 @@ public class TeamDuelSession {
             if (player != null && player.isOnline()) {
                 Location tpLoc = limSpawnRaised.clone().add(i * 0.8, 0, 0);
                 player.teleport(tpLoc);
+                player.getInventory().clear();
                 player.setGameMode(GameMode.SURVIVAL);
                 player.setHealth(player.getMaxHealth());
                 player.setFoodLevel(20);

@@ -83,12 +83,21 @@ public class PartyManager {
     private void givePartyCreationItems(Player player) {
         if (player == null) return;
         try {
-            ItemStack main = configManager.createPartyItem("main_item");
-            ItemStack members = configManager.createPartyItem("members_item");
-            ItemStack restore = configManager.createPartyItem("restore_item");
             int mainSlot = configManager.getPartyItemSlot("main_item", 1) - 1;
             int membersSlot = configManager.getPartyItemSlot("members_item", 2) - 1;
             int restoreSlot = configManager.getPartyItemSlot("restore_item", 9) - 1;
+            
+            // Clear all inventory items except party slots and iron sword
+            for (int i = 0; i < player.getInventory().getSize(); i++) {
+                if (i == mainSlot || i == membersSlot || i == restoreSlot) continue;
+                ItemStack item = player.getInventory().getItem(i);
+                if (item != null && item.getType() == Material.IRON_SWORD) continue;
+                player.getInventory().setItem(i, null);
+            }
+            
+            ItemStack main = configManager.createPartyItem("main_item");
+            ItemStack members = configManager.createPartyItem("members_item");
+            ItemStack restore = configManager.createPartyItem("restore_item");
             if (main != null && mainSlot >= 0 && mainSlot < player.getInventory().getSize()) player.getInventory().setItem(mainSlot, main);
             if (members != null && membersSlot >= 0 && membersSlot < player.getInventory().getSize()) player.getInventory().setItem(membersSlot, members);
             if (restore != null && restoreSlot >= 0 && restoreSlot < player.getInventory().getSize()) player.getInventory().setItem(restoreSlot, restore);
